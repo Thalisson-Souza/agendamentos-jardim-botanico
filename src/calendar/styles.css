@@ -1,0 +1,66 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+}
+
+.icon-container {
+  position: absolute; 
+  top: 10px; 
+  left: 35px; 
+  width: 130px; 
+  height: 130px; 
+}
+
+.icon-container img {
+  width: 100%; 
+  height: 100%;
+  object-fit: contain; 
+  border-radius: 8px; 
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #4d6339; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: #fff;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+iframe {
+  border-radius: 16px; 
+  border-top: 5px solid #2c3e50; 
+  border-bottom: 5px solid #2c3e50; 
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); 
+  max-width: 100%;
+  width: 800px;
+  height: 600px;
+  border-left: none; 
+  border-right: none; 
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+iframe:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02); 
+}
+
+@media (max-width: 850px) {
+  iframe {
+    width: 100%;
+    height: 500px;
+  }
+}
