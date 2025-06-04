@@ -27,27 +27,41 @@ function onFormSubmit(e) {
     const disponivel = verificarDisponibilidade(dataVisita, horario);
     if (!disponivel) {
       if (email) {
-        MailApp.sendEmail({
-          to: email,
-          subject: "Conflito de Horário para Visita ao Jardim Botânico",
-          body: `Olá ${name},
+        enviarEmailConflito(email, name);
+      }
+    }else {
+      inserirEventoAgenda(name, email, dataVisita, horario);
+
+      if(email){
+        enviarEmailSolicitacao(email, name, dataVisita, horario);
+      }
+    }
+    }catch (error){
+      Logger.log("Erro: " + error.toString());
+    }
+}
+
+function enviarEmailConflito(email, name) {
+  const subject = "Conflito de Horário para Visita ao Jardim Botânico";
+  const body = `Olá ${name},
           
 Infelizmente, a data e o horário solicitados para a visita ao Jardim Botânico já estão ocupados. Por favor, escolha outro horário e tente novamente.
 
 Atenciosamente,  
-Equipe do Jardim Botânico`,
-        });
+Equipe do Jardim Botânico`;
 
-        Logger.log(`E-mail de conflito enviado para ${email}.`);
-      }
-    } else {
-      inserirEventoAgenda(name, email, dataVisita, horario);
+  MailApp.sendEmail({
+    to: email,
+    subject: subject,
+    body: body,
+  });
 
-      if (email) {
-        MailApp.sendEmail({
-          to: email,
-          subject: "Solicitação de Visita Recebida",
-          body: `Olá ${name},
+  Logger.log(`E-mail de conflito enviado para ${email}.`);
+}
+
+function enviarEmailSolicitacao(email, name, dataVisita, horario) {
+  const subject = "Solicitação de Visita Recebida";
+  const body = `Olá ${name},
     
 Recebemos sua solicitação de visita ao Jardim Botânico para:
 
@@ -57,14 +71,15 @@ Recebemos sua solicitação de visita ao Jardim Botânico para:
 Em breve, você receberá a confirmação de sua solicitação.
 
 Atenciosamente,  
-Equipe do Jardim Botânico`,
-        });
-        Logger.log(`E-mail de confirmação enviado para ${email}.`);
-      }
-    }
-  } catch (error) {       
-    Logger.log("Erro: " + error.toString());
-  }
+Equipe do Jardim Botânico`;
+
+  MailApp.sendEmail({
+    to: email,
+    subject: subject,
+    body: body,
+  });
+
+  Logger.log(`E-mail de confirmação enviado para ${email}.`);
 }
 
 function inserirEventoAgenda(name, email, dataVisita, horario) {
