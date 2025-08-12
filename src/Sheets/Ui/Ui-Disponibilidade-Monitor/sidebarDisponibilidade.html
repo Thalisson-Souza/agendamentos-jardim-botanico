@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+      :root {
+        --verde-primario: #2e7d32;
+        --verde-secundario: #4caf50;
+        --verde-claro: #8bc34a;
+        --bege-natural: #f5f5dc;
+        --marrom-terroso: #5d4037;
+        --sombra-planta: 0 4px 6px rgba(46, 125, 50, 0.1);
+      }
+
+      body {
+        background-color: var(--bege-natural);
+        color: #333;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 0.92rem;
+        line-height: 1.4;
+        max-width: 100%;
+      }
+
+      .container-fluid {
+        background-color: white;
+        border-radius: 6px;
+        box-shadow: var(--sombra-planta);
+        padding: 1rem;
+        margin: 0.25rem;
+        border: 1px solid #e0e0e0;
+        max-width: 280px;
+      }
+
+      h4,
+      h5 {
+        color: var(--verde-primario);
+        border-bottom: 2px solid var(--verde-claro);
+        padding-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        background-color: var(--verde-primario);
+        border-color: var(--verde-primario);
+      }
+
+      .btn-primary:hover {
+        background-color: var(--verde-secundario);
+        border-color: var(--verde-secundario);
+      }
+
+      .btn-success {
+        background-color: var(--verde-primario);
+        border-color: var(--verde-primario);
+      }
+
+      .alert-success {
+        background-color: #e8f5e9;
+        border-color: var(--verde-claro);
+        color: var(--verde-primario);
+      }
+
+      .alert-warning {
+        background-color: #fff8e1;
+        border-color: #ffd54f;
+        color: #e65100;
+      }
+
+      .alert-danger {
+        background-color: #ffebee;
+        border-color: #ef9a9a;
+      }
+
+      .card {
+        border: none;
+        box-shadow: var(--sombra-planta);
+        border-left: 4px solid var(--verde-primario);
+      }
+
+      .card-title {
+        color: var(--verde-primario);
+      }
+
+      .info-line {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background-color: #f1f8e9;
+        border-radius: 4px;
+      }
+
+      .icon-text {
+        color: var(--verde-primario);
+        margin-right: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .text-muted {
+        color: #757575 !important;
+        font-size: 1rem;
+      }
+
+      .bg-white {
+        border-left: 3px solid var(--verde-claro);
+      }
+
+      .title-with-leaf {
+        position: relative;
+        padding-left: 2rem;
+      }
+
+      .title-with-leaf::before {
+        content: "\f06c";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--verde-primario);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <h5 class="mb-3 title-with-leaf">Disponibilidade de Monitores</h5>
+
+      <p class="mb-5 ms-3 text-muted">
+        <i class="fas fa-info-circle icon-text"></i>Selecione uma linha da planilha e clique no botão<strong
+          ><i class="fa-solid fa-search icon-text ms-2"></i
+        ></strong>
+      </p>
+      <div class="text-center mb-3">
+        <button type="button" class="btn btn-success" onclick="verificar()">
+          <i class="fa-solid fa-search icon-text-active"></i> Verificar Disponibilidade
+        </button>
+      </div>
+      <div id="resultado"></div>
+      <div id="confirmacao" class="mt-1"></div>
+    </div>
+
+    <script>
+      function verificar() {
+        const resultado = document.getElementById("resultado");
+        resultado.innerHTML = `
+            <div class="d-flex flex-column align-items-center my-4">
+              <div class="spinner-border text-success mb-2" role="status" style="width: 2rem; height: 2rem;"></div>
+              <div class="text-success fw-semibold">Verificando disponibilidade...</div>
+            </div>
+          `;
+
+        google.script.run
+          .withSuccessHandler(function (res) {
+            const horarioCompleto = res.detalhesVisita.horario;
+            const horarioSomente = horarioCompleto.split(" - ")[1] || horarioCompleto;
+
+            if (res.status === "erro") {
+              resultado.innerHTML = `
+                <div class="alert alert-danger py-2">
+                  <i class="fas fa-exclamation-triangle icon-text"></i> Erro: ${res.mensagem}
+                </div>`;
+            } else if (res.status === "vazio") {
+              resultado.innerHTML = `
+                 <div class="alert alert-warning py-2">
+                   <i class="fas fa-seedling icon-text"></i>
+                   Ops, nenhum monitor disponível para:<br>
+                   <strong>${res.detalhesVisita.data}</strong> - ${horarioSomente}
+                 </div>`;
+            } else if (res.status === "ocupado") {
+              resultado.innerHTML = `
+                <div class="alert alert-danger py-2">
+                <i class="fas fa-calendar-times icon-text"></i>
+                Horário indisponível: já existe um evento agendado para<br>
+                <strong>${res.detalhesVisita.data}</strong> - ${horarioSomente}
+                </div>`;
+            } else {
+              let html = `
+                 <div class="card">
+                   <div class="card-body">
+                     <h5 class="card-title"><i class="fas fa-leaf icon-text"></i>Detalhes da Visita</h5>
+                     
+                     <div class="info-line">
+                       <i class="fas fa-school icon-text"></i>
+                       <strong>Escola:</strong> ${res.detalhesVisita.escola}
+                     </div>
+                     
+                     <div class="info-line">
+                       <i class="fas fa-user icon-text"></i>
+                       <strong>Responsável:</strong> ${res.detalhesVisita.responsavel}
+                     </div>
+                     
+                     <div class="info-line mb-4">
+                       <i class="fas fa-clock icon-text"></i>
+                       <strong>Data:</strong> ${res.detalhesVisita.data} - ${horarioSomente}
+                     </div>
+         
+                     <h6 class="mb-2"><i class="fas fa-users icon-text"></i><strong> Monitores Disponíveis</strong></h6>
+                     <div class="mb-2">`;
+
+              res.monitores.forEach((m) => {
+                html += `
+                   <div class="bg-white rounded p-2 my-2 d-flex flex-column">      
+                       <span class="fw-semibold"> <i class="fas fa-user-check icon-text"></i> ${m.nome} </span>
+                       <span class="text-muted d-flex"> <i class="fas fa-envelope mt-1 me-1"> </i> <span class="text-break">${m.email}</span>
+                   </div>`;
+              });
+
+              html += `
+                     </div>
+                     <div class="d-flex gap-2 mt-2">
+                       <button type="button" class="btn btn-success btn-confirmar flex-fill" onclick="mostrarConfirmacao('confirmar')">
+                         <i class="fas fa-check icon-text-active"></i> Confirmar Agendamento
+                       </button>
+         
+                       <button type="button" class="btn btn-outline-danger btn-confirmar flex-fill" onclick="mostrarConfirmacao('recusar')">
+                         <i class="fas fa-times icon-text-active"></i> Recusar 
+                       </button>
+                     </div>
+                   </div>
+                 </div>`;
+
+              resultado.innerHTML = html;
+            }
+          })
+          .withFailureHandler(function (error) {
+            resultado.innerHTML = `
+              <div class="alert alert-danger py-2"> 
+                <i class="fas fa-bug icon-text"></i> Erro ao buscar dados: ${error.message}
+              </div>`;
+          })
+          .verificarMonitorSidebar();
+      }
+
+      function confirmarAgendamento(nomeMonitor, emailMonitor) {
+        const resultado = document.getElementById("resultado");
+        confirmacao.innerHTML = "";
+        resultado.innerHTML =
+          '<div class="text-center my-2"><div class="spinner-border spinner-border-sm text-success" role="status"></div> Processando...</div>';
+
+        google.script.run
+          .withSuccessHandler(function (msg) {
+            resultado.innerHTML = `
+              <div class="alert alert-success mt-2 py-2 text-center">
+                <i class="fas fa-check-circle icon-text"></i> ${msg}
+              </div>`;
+          })
+          .withFailureHandler(function (err) {
+            resultado.innerHTML = `
+              <div class="alert alert-danger mt-2 py-2 text-center">
+                <i class="fas fa-exclamation-circle icon-text"></i> Erro: ${err.message}
+              </div>`;
+          })
+          .confirmarAgendamentoPorBotaoSidebar(nomeMonitor, emailMonitor);
+      }
+
+      function recusarAgendamento() {
+        const resultado = document.getElementById("resultado");
+        confirmacao.innerHTML = "";
+        resultado.innerHTML =
+          '<div class="text-center my-2"><div class="spinner-border spinner-border-sm text-danger" role="status"></div> Processando...</div>';
+
+        google.script.run
+          .withSuccessHandler(function (msg) {
+            resultado.innerHTML = `
+           <div class="alert alert-warning mt-2 py-2 text-center">
+                <i class="fas fa-times-circle icon-text"></i> ${msg}
+              </div>`;
+          })
+          .withFailureHandler(function (err) {
+            resultado.innerHTML = `
+              <div class="alert alert-danger mt-2 py-2 text-center">
+                <i class="fas fa-exclamation-circle icon-text"></i> Erro: ${err.message}
+              </div>`;
+          })
+          .recusarAgendamentoPorBotaoSidebar();
+      }
+
+      function mostrarConfirmacao(tipo) {
+        const confirmacao = document.getElementById("confirmacao");
+
+        const texto =
+          tipo === "confirmar"
+            ? "Tem certeza que deseja <strong>confirmar</strong> este agendamento?"
+            : "Tem certeza que deseja <strong>recusar</strong> este agendamento?";
+
+        const cor = tipo === "confirmar" ? "success" : "danger";
+        const icone = tipo === "confirmar" ? "check" : "xmark";
+
+        confirmacao.innerHTML = `
+          <div class="alert alert-${cor} text-center py-3">
+            <p class="mb-3">
+              <i class="fas fa-question-circle icon-text"></i> ${texto}
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+              <button class="btn btn-outline-secondary" onclick="cancelarConfirmacao()">
+                <i class="fas fa-arrow-left icon-text"></i> Cancelar
+              </button>
+              <button class="btn btn-${cor}" onclick="${tipo === "confirmar" ? "confirmarAgendamento" : "recusarAgendamento"}()">
+                <i class="fas fa-${icone} icon-text"></i> Confirmar
+              </button>
+            </div>
+          </div>`;
+      }
+
+      function cancelarConfirmacao() {
+        document.getElementById("confirmacao").innerHTML = "";
+      }
+    </script>
+  </body>
+</html>

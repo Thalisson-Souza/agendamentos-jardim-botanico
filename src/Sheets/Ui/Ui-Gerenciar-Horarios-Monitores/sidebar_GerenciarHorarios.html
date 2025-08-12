@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+      :root {
+        --verde-primario: #2e7d32;
+        --verde-secundario: #4caf50;
+        --verde-claro: #8bc34a;
+        --bege-natural: #f5f5dc;
+        --marrom-terroso: #5d4037;
+        --sombra-planta: 0 4px 6px rgba(46, 125, 50, 0.1);
+      }
+
+      body {
+        background-color: var(--bege-natural);
+        color: #333;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 0.92rem;
+        line-height: 1.4;
+        max-width: 100%;
+      }
+
+      .container-fluid {
+        background-color: white;
+        border-radius: 6px;
+        box-shadow: var(--sombra-planta);
+        padding: 1rem;
+        margin: 0.25rem;
+        border: 1px solid #e0e0e0;
+        max-width: 280px;
+      }
+
+      h4,
+      h5 {
+        color: var(--verde-primario);
+        border-bottom: 2px solid var(--verde-claro);
+        padding-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        background-color: var(--verde-primario);
+        border-color: var(--verde-primario);
+      }
+
+      .btn-primary:hover {
+        background-color: var(--verde-secundario);
+        border-color: var(--verde-secundario);
+      }
+
+      .btn-success {
+        background-color: var(--verde-primario);
+        border-color: var(--verde-primario);
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+
+      .alert-success {
+        background-color: #e8f5e9;
+        border-color: var(--verde-claro);
+        color: var(--verde-primario);
+      }
+
+      .alert-warning {
+        background-color: #fff8e1;
+        border-color: #ffd54f;
+        color: #e65100;
+      }
+
+      .alert-danger {
+        background-color: #ffebee;
+        border-color: #ef9a9a;
+      }
+
+      .card {
+        border: none;
+        box-shadow: var(--sombra-planta);
+        border-left: 4px solid var(--verde-primario);
+      }
+
+      .card-title {
+        color: var(--verde-primario);
+      }
+
+      .info-line {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background-color: #f1f8e9;
+        border-radius: 4px;
+      }
+
+      .icon-text {
+        color: var(--verde-primario);
+        margin-right: 0.4rem;
+        font-size: 0.9rem;
+      }
+
+      .text-muted {
+        color: #757575 !important;
+      }
+
+      .bg-white {
+        border-left: 3px solid var(--verde-claro);
+      }
+
+      .title-with-leaf {
+        position: relative;
+        padding-left: 2rem;
+      }
+
+      .title-with-leaf::before {
+        content: "\f06c";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--verde-primario);
+      }
+
+      /* Formulário */
+      .form-section {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background-color: #f9f9f9;
+        border-radius: 6px;
+        border-left: 3px solid var(--verde-claro);
+      }
+
+      .form-label {
+        font-weight: 500;
+        color: var(--marrom-terroso);
+      }
+
+      .form-control,
+      .form-select {
+        background-color: white;
+        border: 1px solid #ddd;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--verde-claro);
+        box-shadow: 0 0 0 0.25rem rgba(139, 195, 74, 0.25);
+      }
+
+      .nav-tabs {
+        justify-content: center;
+        gap: 0.2rem;
+      }
+
+      /* Abas */
+      .nav-tabs .nav-link {
+        color: var(--verde-primario);
+        border: none;
+        margin-right: 0.5rem;
+      }
+
+      .nav-tabs .nav-link.active {
+        color: white;
+        background-color: var(--verde-primario);
+        border-radius: 4px;
+      }
+
+      .nav-tabs .nav-link:hover:not(.active) {
+        color: var(--verde-secundario);
+        background-color: #f1f8e9;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h5 class="mb-3 title-with-leaf">Gerenciar Monitores</h5>
+
+      <!-- Abas -->
+      <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="btn-atualizar" data-bs-toggle="tab" data-bs-target="#atualizar" type="button" role="tab">
+            <i class="fas fa-user-pen icon-text-active"></i> Atualizar horário
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="btn-adicionar" data-bs-toggle="tab" data-bs-target="#adicionar" type="button" role="tab">
+            <i class="fas fa-user-plus icon-text-active"></i> Adicionar monitor
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="btn-remover" data-bs-toggle="tab" data-bs-target="#remover" type="button" role="tab">
+            <i class="fas fa-user-minus icon-text-active"></i> Remover monitor
+          </button>
+        </li>
+      </ul>
+
+      <!-- Conteúdo das abas -->
+      <div class="tab-content">
+        <!-- Aba Atualizar -->
+        <div class="tab-pane fade show active" id="atualizar" role="tabpanel">
+          <div class="form-section">
+            <div class="mb-3">
+              <label class="form-label"><i class="fas fa-user icon-text"></i> Monitor:</label>
+              <select class="form-select" id="monitorSelect">
+                <option selected disabled>Selecione</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label"> <i class="fas fa-id-card icon-text"></i> Nome atualizado: </label>
+              <input type="text" class="form-control" id="novoNomeAtualizar" placeholder="Nome completo" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label"> <i class="fas fa-envelope icon-text"></i> Novo e-mail: </label>
+              <input type="email" class="form-control" id="novoEmailAtualizar" placeholder="email@exemplo.com" />
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button class="btn btn-success" onclick="atualizarDadosMonitor()">
+                <i class="fas fa-save icon-text-active"></i> Atualizar Dados
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aba Adicionar -->
+        <div class="tab-pane fade" id="adicionar" role="tabpanel">
+          <div class="form-section">
+            <div class="mb-3">
+              <label class="form-label"><i class="fas fa-id-card icon-text"></i> Nome do monitor:</label>
+              <input type="text" class="form-control" id="novoNome" placeholder="Nome completo" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label"><i class="fas fa-envelope icon-text"> </i> E-mail:</label>
+              <input type="email" class="form-control" id="novoEmail" placeholder="email@exemplo.com" />
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 mt-4">
+            <button class="btn btn-success" onclick="adicionarMonitor()">
+              <i class="fas fa-user-plus icon-text-active"></i> Adicionar Monitor
+            </button>
+          </div>
+        </div>
+
+        <!-- Aba Remover -->
+        <div class="tab-pane fade" id="remover" role="tabpanel">
+          <div class="form-section">
+            <div class="mb-3">
+              <label class="form-label"><i class="fas fa-user icon-text"></i> Selecione o monitor:</label>
+              <select class="form-select" id="removerSelect">
+                <option selected disabled>Selecione</option>
+              </select>
+            </div>
+
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle icon-text"></i>
+              Isto irá remover permanentemente o monitor do sistema.
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button class="btn btn-danger" onclick="removerMonitor()">
+                <i class="fas fa-user-minus icon-text-active"></i> Remover Monitor
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensagem -->
+      <div id="mensagem" class="text-center mt-3"></div>
+    </div>
+
+    <script>
+      function exibirMensagem(msg, tipo) {
+        const msgDiv = document.getElementById("mensagem");
+        let icon = "";
+
+        if (tipo === "success") icon = '<i class="fas fa-check-circle icon-text"></i>';
+        else if (tipo === "warning") icon = '<i class="fas fa-exclamation-triangle icon-text"></i>';
+        else if (tipo === "danger") icon = '<i class="fas fa-times-circle icon-text"></i>';
+
+        msgDiv.innerHTML = `<div class="alert alert-${tipo} py-2 mb-0">${icon} ${msg}</div>`;
+
+        if (tipo !== "danger") {
+          setTimeout(() => {
+            msgDiv.innerHTML = "";
+          }, 5000);
+        }
+      }
+
+      function atualizarDadosMonitor() {
+        const monitorSelect = document.getElementById("monitorSelect");
+        const novoNome = document.getElementById("novoNomeAtualizar").value.trim();
+        const novoEmail = document.getElementById("novoEmailAtualizar").value.trim();
+
+        const nomeOriginal = monitorSelect.value;
+
+        if (!nomeOriginal || !novoNome || !novoEmail) {
+          exibirMensagem("Preencha todos os campos.", "warning");
+          return;
+        }
+
+        google.script.run
+          .withSuccessHandler(() => {
+            exibirMensagem("Dados atualizados com sucesso!", "success");
+            carregarMonitores();
+
+            document.getElementById("monitorSelect").value = "";
+            document.getElementById("novoNomeAtualizar").value = "";
+            document.getElementById("novoEmailAtualizar").value = "";
+          })
+          .withFailureHandler((error) => {
+            exibirMensagem("Erro ao atualizar: " + error.message, "danger");
+          })
+          .atualizarNomeEmailMonitor(nomeOriginal, novoNome, novoEmail);
+      }
+
+      function adicionarMonitor() {
+        const novoNome = document.getElementById("novoNome").value.trim();
+        const novoEmail = document.getElementById("novoEmail").value.trim();
+
+        if (!novoNome || !novoEmail) {
+          exibirMensagem("Preencha todos os campos.", "warning");
+          return;
+        }
+
+        google.script.run
+          .withSuccessHandler((msg) => {
+            exibirMensagem(msg, "success");
+            carregarMonitores();
+            document.getElementById("novoNome").value = "";
+            document.getElementById("novoEmail").value = "";
+            carregarMonitores();
+          })
+          .withFailureHandler((error) => {
+            exibirMensagem("Erro ao adicionar: " + error.message, "danger");
+          })
+          .adicionarMonitor(novoNome, novoEmail);
+      }
+
+      function removerMonitor() {
+        const select = document.getElementById("removerSelect");
+        const nomeMonitor = select.value;
+
+        if (!nomeMonitor) {
+          exibirMensagem("Selecione um monitor para remover", "warning");
+          return;
+        }
+
+        if (!confirm(`Tem certeza que deseja remover permanentemente ${nomeMonitor}?`)) {
+          return;
+        }
+
+        google.script.run
+          .withSuccessHandler((msg) => {
+            exibirMensagem(msg, "success");
+            carregarMonitores();
+            select.value = "";
+          })
+          .withFailureHandler((error) => {
+            exibirMensagem("Erro ao remover: " + error.message, "danger");
+          })
+          .removerMonitor(nomeMonitor);
+      }
+
+      function carregarMonitores() {
+        google.script.run.withSuccessHandler(popularSelects).getMonitores();
+      }
+
+      function popularSelects(monitores) {
+        const monitorSelect = document.getElementById("monitorSelect");
+        const removerSelect = document.getElementById("removerSelect");
+
+        [monitorSelect, removerSelect].forEach((select) => {
+          select.querySelectorAll("option:not([disabled])").forEach((opt) => opt.remove());
+        });
+
+        monitores.forEach((monitor) => {
+          const nomeMonitor = monitor.nomeMonitorAchado;
+          const opcaoAtualizar = document.createElement("option");
+          opcaoAtualizar.value = nomeMonitor;
+          opcaoAtualizar.textContent = nomeMonitor;
+          monitorSelect.appendChild(opcaoAtualizar);
+
+          const opcaoRemover = document.createElement("option");
+          opcaoRemover.value = nomeMonitor;
+          opcaoRemover.textContent = nomeMonitor;
+          removerSelect.appendChild(opcaoRemover);
+        });
+      }
+
+      function inserirOpcoesNosSelects() {
+        for (let i = 1; i <= 3; i++) {
+          const select = document.getElementById(`atividade${i}`);
+          if (select) {
+            select.insertAdjacentHTML("beforeend", getOpcoesAtividades());
+          }
+        }
+      }
+
+      window.addEventListener("load", () => {
+        inserirOpcoesNosSelects();
+        carregarMonitores();
+      });
+    </script>
+  </body>
+</html>

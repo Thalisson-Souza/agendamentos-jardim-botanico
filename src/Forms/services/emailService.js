@@ -1,3 +1,4 @@
+/** Envia uma notificação por e-mail usando um template predefinido. */
 function enviarEmail(emailDetails) {
   const { template, recipientEmail, params } = emailDetails;
   try {
